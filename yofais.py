@@ -51,8 +51,9 @@ def yourFace(face, location, item):
 	item = Image.open(item)
 	height = abs(location[0] - location[2])
 	width = abs(location[1] - location[3])
+	box = (location[3], location[0], location[1], location[3])
 
-	face.paste(item.resize((width, height)), (location[0], location[3]))
+	face.paste(item.resize((width, height)), box)
 	face.show()
 	return face
 

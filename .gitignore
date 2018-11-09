@@ -1,5 +1,6 @@
-bill.jpg
 downloads/
 average_image.py
 find_face.py
 __pycache__
+*.jpg
+*.png
