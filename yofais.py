@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from __future__ import (absolute_import, division, print_function)
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops
 import six
 import imagehash
 import face_recognition
@@ -28,7 +28,7 @@ def averageImage(item, hashfunc = imagehash.average_hash):
 	images = {}
 	for img in sorted(image_filenames):
 		try:
-			hash = hashfunc(Image.open(img))
+			hash = hashfunc(Image.open(img).convert('RGBA'))
 		except Exception as e:
 			print('Problem:', e, 'with', img)
 		if hash in images:
@@ -46,12 +46,18 @@ def findFace(image):
 	unknown_image = face_recognition.load_image_file(image)
 	return face_recognition.face_locations(unknown_image)[0]
 
+def clear(dir):
+	import shutil
+	shutil.rmtree('./downloads/' + dir, ignore_errors = True)
+	
+
 def yourFace(face, location, item):
-	face = Image.open(face)
-	item = Image.open(item)
+	face = Image.open(face).convert('RGBA')
+	item = Image.open(item).convert('RGBA')
 	height = abs(location[0] - location[2])
 	width = abs(location[1] - location[3])
-	box = (location[3], location[0], location[1], location[3])
+	box = (location[3], location[0], location[1], location[2])
+	print(height, width, box)
 
 	face.paste(item.resize((width, height)), box)
 	face.show()
@@ -66,6 +72,7 @@ def main():
 	item = averageImage(itemstr)
 	face_location = findFace(face)
 	new_face = yourFace(face, face_location, item)
+	clear(itemstr)
 
 if __name__ == "__main__":
 	main()
